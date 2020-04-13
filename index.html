@@ -6,11 +6,18 @@
     <meta http-equiv='X-UA-Compatible' content='ie=edge'>
 
     <link rel='stylesheet' href='css/style.css'>
+    <link rel='stylesheet' href='css/bootstrap.dark.min.css'>
 
     <title>Darts Aim Simulator</title>
 </head>
 <body>
-    <button onclick="get_score(0, 0)">Test</button>
+    <div class='text-center container'>
+        <h1 class='mt-5 mb-3'>Darts Aim Simulator</h1>
+        <h4>Drag the slider based on your aim. The highlighed circle on the dartboard indicates where you should aim.</h4>
+        <canvas id='canvas' class='my-4' height='500' width='500'></canvas>
+        <input id='slider' class='custom-range px-5' type='range' min='1' max='180' value='50'>
+    </div>
+    
     <script type='text/javascript' src='js/main.js'></script>
 </body>
 </html>

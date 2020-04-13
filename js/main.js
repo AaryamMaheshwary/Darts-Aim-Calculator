@@ -1,3 +1,19 @@
+var board_diameter = 250
+create_dartboard()
+
+var canvas = document.querySelector('canvas')
+canvas.addEventListener('mousedown', function(e) {
+    var rect = canvas.getBoundingClientRect()
+    var x = event.clientX - rect.left - 250
+    var y = -(event.clientY - rect.top) + 250
+    console.log('Score: ' + get_score(x, y))
+})
+
+var slider = document.getElementById("slider");
+slider.oninput = function() {
+    console.log('Slider value: ' + this.value)
+}
+
 function get_score(x, y) {
     // Get the angle between the positive x axis and the dart
     var angle = Math.atan2(y, x) * 180 / Math.PI
@@ -7,9 +23,9 @@ function get_score(x, y) {
     var dist = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2))
 
     // Check if the dart has hit the bullseye or has missed the target
-    if (dist <= 10) return 50
-    else if (dist <= 20) return 25
-    else if (dist > 144) return 0
+    if (dist <= board_diameter*.025) return 50
+    else if (dist <= board_diameter*.06) return 25
+    else if (dist > board_diameter*.72) return 0
 
     // Find the score of the dart based on its angle
     if (angle >= 351 || angle < 9) var score = 6
@@ -34,8 +50,94 @@ function get_score(x, y) {
     else if (angle >= 333 && angle < 351) var score = 10
 
     // Check if the dart is on the double or triple ring
-    if (dist >= 74 && dist <= 84) score *= 3
-    else if (dist >= 134 && dist <= 144) score *= 2
+    if (dist >= board_diameter*.37 && dist <= board_diameter*.42) score *= 3
+    else if (dist >= board_diameter*.67 && dist <= board_diameter*.72) score *= 2
 
     return score
+}
+
+function create_dartboard() {
+    // Colors
+    var white = '#ffffff'
+    var black = '#000000'
+    var red = '#ff0000'
+    var green = '#008000'
+
+    // Numbers
+    create_arc(black, board_diameter, 0, 2*Math.PI)
+    create_number('20', 230, 50)
+    create_number('1', 300, 60)
+    create_number('18', 352, 90)
+    create_number('4', 410, 145)
+    create_number('13', 430, 205)
+    create_number('6', 450, 265)
+    create_number('10', 430, 325)
+    create_number('15', 400, 385)
+    create_number('2', 360, 435)
+    create_number('17', 290, 465)
+    create_number('3', 240, 475)
+    create_number('19', 165, 465)
+    create_number('7', 115, 435)
+    create_number('16', 55, 385)
+    create_number('8', 40, 325)
+    create_number('11', 15, 265)
+    create_number('14', 25, 205)
+    create_number('9', 60, 145)
+    create_number('12', 105, 90)
+    create_number('5', 175, 60)
+
+    // Double Ring
+    var color = green
+    for (var i=9; i<=351; i+=18) {
+        if (color == red) color = green
+        else if (color == green) color = red
+        create_arc(color, board_diameter*.72, i/180*Math.PI, (i+18)/180*Math.PI)
+    }
+
+    // Outer Single Ring
+    var color = white
+    for (var i=9; i<=351; i+=18) {
+        if (color == black) color = white
+        else if (color == white) color = black
+        create_arc(color, board_diameter*.67, i/180*Math.PI, (i+18)/180*Math.PI)
+    }
+
+    // Triple Ring
+    var color = green
+    for (var i=9; i<=351; i+=18) {
+        if (color == red) color = green
+        else if (color == green) color = red
+        create_arc(color, board_diameter*.42, i/180*Math.PI, (i+18)/180*Math.PI)
+    }
+    
+    // Inner Single Ring
+    var color = white
+    for (var i=9; i<=351; i+=18) {
+        if (color == black) color = white
+        else if (color == white) color = black
+        create_arc(color, board_diameter*.37, i/180*Math.PI, (i+18)/180*Math.PI)
+    }
+
+    // Bullseye
+    create_arc(green, board_diameter*.06, 0, 2*Math.PI)
+    create_arc(red, board_diameter*.025, 0, 2*Math.PI)
+}
+
+function create_arc(color, radius, start_angle, end_angle) {
+    var canvas = document.getElementById('canvas')
+    var ctx = canvas.getContext('2d')
+    ctx.beginPath()
+    ctx.moveTo(250, 250)
+    ctx.fillStyle = color
+    ctx.arc(250, 250, radius, start_angle, end_angle)
+    ctx.fill()
+}
+
+function create_number(number, x, y) {
+    var canvas = document.getElementById('canvas')
+    var ctx = canvas.getContext('2d')
+    ctx.beginPath()
+    ctx.font = '35px Verdana'
+    ctx.fillStyle = 'white'
+    ctx.fillText(number, x, y)
 }
