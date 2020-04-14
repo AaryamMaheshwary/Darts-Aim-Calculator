@@ -1,17 +1,34 @@
+// Global variables
+var canvas = document.getElementById('canvas')
+var slider = document.getElementById("slider");
+var ctx = canvas.getContext('2d')
 var board_diameter = 250
+
 create_dartboard()
 
-var canvas = document.querySelector('canvas')
-canvas.addEventListener('mousedown', function(e) {
-    var rect = canvas.getBoundingClientRect()
-    var x = event.clientX - rect.left - 250
-    var y = -(event.clientY - rect.top) + 250
-    console.log('Score: ' + get_score(x, y))
-})
-
-var slider = document.getElementById("slider");
 slider.oninput = function() {
     console.log('Slider value: ' + this.value)
+}
+
+function get_average_score_in_area(x, y, radius, num_iter) {
+    var total_score = 0
+    for (var i=0; i<num_iter; i++) {
+        // Get a random point in the circular area
+        var rand_dist = Math.sqrt(Math.random()) * radius
+        var rand_radians = Math.random() * 2 * Math.PI
+        var rand_x = rand_dist * Math.cos(rand_radians) + x
+        var rand_y = rand_dist * Math.sin(rand_radians) + y
+
+        // Get the point's score
+        score = get_score(rand_x, rand_y)
+
+        // Append the score to the total score
+        total_score += score
+    }
+    // Divide the total score by the number of points to find the average score
+    var average_score = total_score/num_iter
+
+    return average_score
 }
 
 function get_score(x, y) {
@@ -23,8 +40,8 @@ function get_score(x, y) {
     var dist = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2))
 
     // Check if the dart has hit the bullseye or has missed the target
-    if (dist <= board_diameter*.025) return 50
-    else if (dist <= board_diameter*.06) return 25
+    if (dist <= board_diameter*.02689) return 50
+    else if (dist <= board_diameter*.06734) return 25
     else if (dist > board_diameter*.72) return 0
 
     // Find the score of the dart based on its angle
@@ -50,8 +67,8 @@ function get_score(x, y) {
     else if (angle >= 333 && angle < 351) var score = 10
 
     // Check if the dart is on the double or triple ring
-    if (dist >= board_diameter*.37 && dist <= board_diameter*.42) score *= 3
-    else if (dist >= board_diameter*.67 && dist <= board_diameter*.72) score *= 2
+    if (dist >= board_diameter*.4193 && dist <= board_diameter*.4532) score *= 3
+    else if (dist >= board_diameter*.6861 && dist <= board_diameter*.72) score *= 2
 
     return score
 }
@@ -99,7 +116,7 @@ function create_dartboard() {
     for (var i=9; i<=351; i+=18) {
         if (color == black) color = white
         else if (color == white) color = black
-        create_arc(color, board_diameter*.67, i/180*Math.PI, (i+18)/180*Math.PI)
+        create_arc(color, board_diameter*.6861, i/180*Math.PI, (i+18)/180*Math.PI)
     }
 
     // Triple Ring
@@ -107,7 +124,7 @@ function create_dartboard() {
     for (var i=9; i<=351; i+=18) {
         if (color == red) color = green
         else if (color == green) color = red
-        create_arc(color, board_diameter*.42, i/180*Math.PI, (i+18)/180*Math.PI)
+        create_arc(color, board_diameter*.4532, i/180*Math.PI, (i+18)/180*Math.PI)
     }
     
     // Inner Single Ring
@@ -115,17 +132,15 @@ function create_dartboard() {
     for (var i=9; i<=351; i+=18) {
         if (color == black) color = white
         else if (color == white) color = black
-        create_arc(color, board_diameter*.37, i/180*Math.PI, (i+18)/180*Math.PI)
+        create_arc(color, board_diameter*.4193, i/180*Math.PI, (i+18)/180*Math.PI)
     }
 
     // Bullseye
-    create_arc(green, board_diameter*.06, 0, 2*Math.PI)
-    create_arc(red, board_diameter*.025, 0, 2*Math.PI)
+    create_arc(green, board_diameter*.06734, 0, 2*Math.PI)
+    create_arc(red, board_diameter*.02689, 0, 2*Math.PI)
 }
 
 function create_arc(color, radius, start_angle, end_angle) {
-    var canvas = document.getElementById('canvas')
-    var ctx = canvas.getContext('2d')
     ctx.beginPath()
     ctx.moveTo(250, 250)
     ctx.fillStyle = color
@@ -134,8 +149,6 @@ function create_arc(color, radius, start_angle, end_angle) {
 }
 
 function create_number(number, x, y) {
-    var canvas = document.getElementById('canvas')
-    var ctx = canvas.getContext('2d')
     ctx.beginPath()
     ctx.font = '35px Verdana'
     ctx.fillStyle = 'white'
