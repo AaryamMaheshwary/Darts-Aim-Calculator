@@ -1,33 +1,71 @@
 // Global variables
 var canvas = document.getElementById('canvas')
-var slider = document.getElementById("slider");
+var slider = document.getElementById('slider')
 var ctx = canvas.getContext('2d')
 var board_diameter = 250
-
-create_dartboard()
-
-slider.oninput = function() {
-    console.log('Slider value: ' + this.value)
+var data = {}
+for (var i=slider.min; i<=slider.max; i++) {
+    data[i] = find_best_area(i)
 }
 
-function get_average_score_in_area(x, y, radius, num_iter) {
-    var total_score = 0
-    for (var i=0; i<num_iter; i++) {
-        // Get a random point in the circular area
-        var rand_dist = Math.sqrt(Math.random()) * radius
-        var rand_radians = Math.random() * 2 * Math.PI
-        var rand_x = rand_dist * Math.cos(rand_radians) + x
-        var rand_y = rand_dist * Math.sin(rand_radians) + y
+refresh_dartboard()
 
-        // Get the point's score
-        score = get_score(rand_x, rand_y)
+slider.addEventListener('input', function() {
+    refresh_dartboard()
+})
 
-        // Append the score to the total score
-        total_score += score
+function refresh_dartboard() {
+    // Clear the canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+    create_dartboard()
+
+    // Create a circle to indicate the aiming region
+    ctx.beginPath()
+    ctx.fillStyle = '#ffa500aa'
+    ctx.arc(data[slider.value][0]+250, -data[slider.value][1]+250, slider.value, 0, 2*Math.PI)
+    ctx.fill()
+}
+
+function find_best_area(radius) {
+    var max = [0, 0, 0]
+    
+    // Iterate through points on the dartboard
+    for (var i=-180; i<=180; i+=5) {
+        for (var j=-180; j<=180; j+=5) {
+            var score = get_average_score_in_area(i, j, radius)
+
+            // If the score is larger than the current largest score, replace it
+            if (score > max[2]) {
+                max = [i, j, score]
+            }
+        }
     }
-    // Divide the total score by the number of points to find the average score
-    var average_score = total_score/num_iter
 
+    return [max[0], max[1]]
+}
+
+function get_average_score_in_area(x, y, radius) {
+    var total_score = 0
+    var num_iter = 0
+
+    // Iterate through all the points in the circle
+    for (var i=-radius; i<=radius; i+=10) {
+        var k = Math.trunc(((radius**2)-(i**2))**.5)
+        for (var j=-k; j<=k; j+=10) {
+            // Get the point's score
+            score = get_score(i+x, j+y)
+
+            // Append the score to the total score
+            total_score += score
+
+            // Update the number of iterations
+            num_iter++
+        }
+    }
+
+    // Divide the total score by the number of iterations to find the average score
+    var average_score = total_score/num_iter
     return average_score
 }
 
