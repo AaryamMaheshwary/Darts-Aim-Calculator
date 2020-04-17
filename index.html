@@ -1,21 +1,29 @@
 <!DOCTYPE html>
 <html lang='en'>
+
 <head>
     <meta charset='UTF-8'>
     <meta name='viewport' content='width=device-width, initial-scale=1.0'>
     <meta http-equiv='X-UA-Compatible' content='ie=edge'>
-
-    <link rel='stylesheet' href='css/bootstrap.dark.min.css'>
-
+    <link rel='stylesheet' href='css/bootstrap.css'>
     <title>Darts Aim Calculator</title>
 </head>
+
 <body>
     <div class='text-center container'>
         <h1 class='mt-5 mb-3'>Darts Aim Calculator</h1>
-        <h4>Drag the slider based on your skill level. The highlighed circle on the dartboard is the best place for you to aim.</h4>
-        <canvas id='canvas' class='my-4' height='500' width='500'></canvas>             
-        <input id='slider' class='custom-range px-5' type='range' min='17' max='180' value='100'>
+        <h5>Drag the slider based on your skill level. The highlighed circle on the dartboard is the best place for you
+            to aim.</h5>
+        <canvas id='canvas' class='my-4' height='500' width='500'></canvas>
+        <div class="row px-5">
+            <div class="col">
+                <span class="align-middle">Good</span>
+                <input id='slider' class='custom-range px-4 align-middle' type='range' min='17' max='180' value='100'>
+                <span class="align-middle">Bad</span>
+            </div>
+        </div>
     </div>
     <script type='text/javascript' src='js/main.js'></script>
 </body>
+
 </html>
